@@ -1,21 +1,21 @@
 /* global gradioApp, get_uiCurrentTabContent, onUiUpdate, onUiLoaded */
 // prettier-ignore
-const SDDP_HELP_TEXTS = {
-  "sddp-disable-negative-prompt": "Don't use prompt magic on negative prompts.",
-  "sddp-dynamic-prompts-enabled": "Complete documentation is available at https://github.com/adieyal/sd-dynamic-prompts. Please report any issues on GitHub.",
-  "sddp-is-attention-grabber": "Add emphasis to a randomly selected keyword in the prompt.",
-  "sddp-is-combinatorial": "Generate all possible prompt combinations.",
-  "sddp-is-feelinglucky": "Generate random prompts from lexica.art (your prompt is used as a search query).",
-  "sddp-is-fixed-seed": "Use the same seed for all prompts in this batch",
-  "sddp-is-magicprompt": "Automatically update your prompt with interesting modifiers. (Runs slowly the first time)",
-  "sddp-magic-prompt-model": "Note: Each model will download between 300mb and 1.4gb of data on first use.",
-  "sddp-no-image-generation": "Disable image generation. Useful if you only want to generate text prompts. (1 image will still be generated to keep Auto1111 happy.).",
-  "sddp-unlink-seed-from-prompt": "If this is set, then random prompts are generated, even if the seed is the same.",
-  "sddp-write-prompts": "Write all generated prompts to a file",
-  "sddp-write-raw-template": "Write template into image metadata.",
+const CDP_HELP_TEXTS = {
+  "cdp-disable-negative-prompt": "Don't use prompt magic on negative prompts.",
+  "cdp-dynamic-prompts-enabled": "Supports conditional prompts such as @if{bikini=__action__, tag | swimsuit=other tag}.",
+  "cdp-is-attention-grabber": "Add emphasis to a randomly selected keyword in the prompt.",
+  "cdp-is-combinatorial": "Generate all possible prompt combinations.",
+  "cdp-is-feelinglucky": "Generate random prompts from lexica.art (your prompt is used as a search query).",
+  "cdp-is-fixed-seed": "Use the same seed for all prompts in this batch",
+  "cdp-is-magicprompt": "Automatically update your prompt with interesting modifiers. (Runs slowly the first time)",
+  "cdp-magic-prompt-model": "Note: Each model will download between 300mb and 1.4gb of data on first use.",
+  "cdp-no-image-generation": "Disable image generation. Useful if you only want to generate text prompts. (1 image will still be generated to keep Auto1111 happy.).",
+  "cdp-unlink-seed-from-prompt": "If this is set, then random prompts are generated, even if the seed is the same.",
+  "cdp-write-prompts": "Write all generated prompts to a file",
+  "cdp-write-raw-template": "Write template into image metadata.",
 };
 
-class SDDPTreeView {
+class CDPTreeView {
   /**
    * @constructor
    * @property {object} handlers The attached event handlers
@@ -130,7 +130,7 @@ class SDDPTreeView {
   }
 }
 
-class SDDP_UI {
+class CDP_UI {
   constructor() {
     this.helpTextsConfigured = false;
     this.wildcardsLoaded = false;
@@ -148,10 +148,10 @@ class SDDP_UI {
       return;
     }
     // eslint-disable-next-line guard-for-in,no-restricted-syntax
-    for (const elemId in SDDP_HELP_TEXTS) {
+    for (const elemId in CDP_HELP_TEXTS) {
       const elem = gradioApp().getElementById(elemId);
       if (elem) {
-        elem.setAttribute("title", SDDP_HELP_TEXTS[elemId]);
+        elem.setAttribute("title", CDP_HELP_TEXTS[elemId]);
       } else {
         return; // Didn't find all elements...
       }
@@ -161,7 +161,7 @@ class SDDP_UI {
 
   getInboxMessageText() {
     return gradioApp().querySelector(
-      "#sddp-wildcard-s2c-message-textbox textarea",
+      "#cdp-wildcard-s2c-message-textbox textarea",
     )?.value;
   }
 
@@ -171,16 +171,16 @@ class SDDP_UI {
 
   sendAction(payload) {
     const outbox = gradioApp().querySelector(
-      "#sddp-wildcard-c2s-message-textbox textarea",
+      "#cdp-wildcard-c2s-message-textbox textarea",
     );
     outbox.value = this.formatPayload(payload);
     // See https://github.com/AUTOMATIC1111/stable-diffusion-webui/commit/38b7186e6e3a4dffc93225308b822f0dae43a47d
     window.updateInput?.(outbox);
-    gradioApp().querySelector("#sddp-wildcard-c2s-action-button").click();
+    gradioApp().querySelector("#cdp-wildcard-c2s-action-button").click();
   }
 
   requestWildcardTree() {
-    gradioApp().querySelector("#sddp-wildcard-load-tree-button")?.click();
+    gradioApp().querySelector("#cdp-wildcard-load-tree-button")?.click();
   }
 
   doReadMessage() {
@@ -198,7 +198,7 @@ class SDDP_UI {
     } else if (action === "load file" && success) {
       this.loadFileIntoEditor(message);
     } else {
-      console.warn("SDDP: Unknown message", message);
+      console.warn("CDP: Unknown message", message);
     }
   }
 
@@ -211,9 +211,9 @@ class SDDP_UI {
     }
     const filteredContent = this.filterTreeContent(content, filter);
     if (!this.treeView) {
-      const treeDiv = gradioApp().querySelector("#sddp-wildcard-tree");
+      const treeDiv = gradioApp().querySelector("#cdp-wildcard-tree");
       if (treeDiv) {
-        treeView = new SDDPTreeView(filteredContent, treeDiv);
+        treeView = new CDPTreeView(filteredContent, treeDiv);
         treeView.on("select", this.onSelectNode.bind(this), null);
         this.treeView = treeView;
       }
@@ -234,10 +234,10 @@ class SDDP_UI {
 
   loadFileIntoEditor(message) {
     const editor = gradioApp().querySelector(
-      "#sddp-wildcard-file-editor textarea",
+      "#cdp-wildcard-file-editor textarea",
     );
-    const name = gradioApp().querySelector("#sddp-wildcard-file-name textarea");
-    const saveButton = gradioApp().querySelector("#sddp-wildcard-save-button");
+    const name = gradioApp().querySelector("#cdp-wildcard-file-name textarea");
+    const saveButton = gradioApp().querySelector("#cdp-wildcard-save-button");
     const { contents, wrapped_name: wrappedName, can_edit: canEdit } = message;
     editor.value = contents;
     name.value = wrappedName;
@@ -267,7 +267,7 @@ class SDDP_UI {
         this,
       );
       gradioApp()
-        .querySelector("#sddp-wildcard-search textarea")
+        .querySelector("#cdp-wildcard-search textarea")
         ?.addEventListener("input", debouncedSearch);
       this.searchKeyConfigured = true;
     }
@@ -282,7 +282,7 @@ class SDDP_UI {
   onSaveFileClick() {
     const json = JSON.parse(this.getInboxMessageText());
     const contents = gradioApp().querySelector(
-      "#sddp-wildcard-file-editor textarea",
+      "#cdp-wildcard-file-editor textarea",
     ).value;
     return this.formatPayload({
       action: "save wildcard",
@@ -318,21 +318,21 @@ class SDDP_UI {
   }
 }
 
-const SDDP = new SDDP_UI();
-window.SDDP = SDDP;
+const CDP = new CDP_UI();
+window.CDP = CDP;
 
 (
   window.onAfterUiUpdate || // sd-webui 1.3.0+
   window.onUiUpdate
 )(() => {
-  SDDP.configureHelpTexts();
+  CDP.configureHelpTexts();
   // Work around a bug in get_uiCurrentTabContent() and nested tabs
   // (can be replaced with get_uiCurrentTabContent() if
   // https://github.com/AUTOMATIC1111/stable-diffusion-webui/pull/10863 is merged)
   const currentVisibleTopLevelTab = gradioApp().querySelector(
     '#tabs > .tabitem[id^=tab_]:not([style*="display: none"])',
   );
-  if (currentVisibleTopLevelTab?.id === "tab_sddp-wildcard-manager") {
-    SDDP.onWildcardManagerTabActivate();
+  if (currentVisibleTopLevelTab?.id === "tab_cdp-wildcard-manager") {
+    CDP.onWildcardManagerTabActivate();
   }
 });

@@ -1,4 +1,4 @@
-UI_ELEMENT_ID_PREFIX = "sddp-"
+UI_ELEMENT_ID_PREFIX = "cdp-"
 
 
 def make_element_id(name: str) -> str:

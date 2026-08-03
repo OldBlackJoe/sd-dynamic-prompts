@@ -11,26 +11,26 @@ import modules.scripts as scripts
 import torch
 from dynamicprompts.generators.promptgenerator import GeneratorException
 from dynamicprompts.parser.parse import ParserConfig
-from dynamicprompts.wildcards import WildcardManager
 from modules.processing import fix_seed
 from modules.shared import opts
 
-from sd_dynamic_prompts import __version__, callbacks
-from sd_dynamic_prompts.element_ids import make_element_id
-from sd_dynamic_prompts.generator_builder import GeneratorBuilder
-from sd_dynamic_prompts.helpers import (
+from conditional_dynamic_prompts import __version__, callbacks
+from conditional_dynamic_prompts.conditional_syntax import ConditionalWildcardManager
+from conditional_dynamic_prompts.element_ids import make_element_id
+from conditional_dynamic_prompts.generator_builder import GeneratorBuilder
+from conditional_dynamic_prompts.helpers import (
     generate_prompts,
     get_seeds,
     load_magicprompt_models,
     repeat_iterable_to_length,
     should_freeze_prompt,
 )
-from sd_dynamic_prompts.paths import (
+from conditional_dynamic_prompts.paths import (
     get_extension_base_path,
     get_magicprompt_models_txt_path,
     get_wildcard_dir,
 )
-from sd_dynamic_prompts.prompt_writer import PromptWriter
+from conditional_dynamic_prompts.prompt_writer import PromptWriter
 
 VERSION = __version__
 
@@ -53,7 +53,9 @@ loaded_count = 0
 @lru_cache(maxsize=1)
 def _get_install_error_message() -> str | None:
     try:
-        from sd_dynamic_prompts.version_tools import get_dynamicprompts_install_result
+        from conditional_dynamic_prompts.version_tools import (
+            get_dynamicprompts_install_result,
+        )
 
         get_dynamicprompts_install_result().raise_if_incorrect()
     except RuntimeError as rte:
@@ -96,7 +98,7 @@ class Script(scripts.Script):
         # When the Reload UI button in the settings tab is pressed, the script is loaded twice again
         # Therefore we only register callbacks every second time the script is loaded
         self._prompt_writer = PromptWriter()
-        self._wildcard_manager = WildcardManager(get_wildcard_dir())
+        self._wildcard_manager = ConditionalWildcardManager(get_wildcard_dir())
 
         if loaded_count % 2 == 0:
             return
@@ -106,7 +108,7 @@ class Script(scripts.Script):
         callbacks.register_wildcards_tab(self._wildcard_manager)
 
     def title(self):
-        return f"Dynamic Prompts v{VERSION}"
+        return f"Conditional Dynamic Prompts v{VERSION}"
 
     def show(self, is_img2img):
         return scripts.AlwaysVisible
@@ -127,12 +129,12 @@ class Script(scripts.Script):
         jinja_help = jinja_html_path.read_text("utf-8")
 
         with gr.Group(elem_id=make_element_id("dynamic-prompting")):
-            title = "Dynamic Prompts"
+            title = "Conditional Dynamic Prompts"
             if not correct_lib_version:
                 title += " [incorrect installation]"
             with gr.Accordion(title, open=False):
                 is_enabled = gr.Checkbox(
-                    label="Dynamic Prompts enabled",
+                    label="Conditional Dynamic Prompts enabled",
                     value=correct_lib_version,
                     interactive=correct_lib_version,
                     elem_id=make_element_id("dynamic-prompts-enabled"),
@@ -140,7 +142,7 @@ class Script(scripts.Script):
 
                 if not correct_lib_version:
                     gr.HTML(
-                        f"""<span class="warning sddp-warning">Dynamic Prompts is not installed correctly</span>.
+                        f"""<span class="warning cdp-warning">Conditional Dynamic Prompts is not installed correctly</span>.
                         {install_message}""",
                     )
 
@@ -174,8 +176,8 @@ class Script(scripts.Script):
                         try:
                             magicprompt_models = load_magicprompt_models()
                             default_magicprompt_model = (
-                                opts.dp_magicprompt_default_model
-                                if hasattr(opts, "dp_magicprompt_default_model")
+                                opts.cdp_magicprompt_default_model
+                                if hasattr(opts, "cdp_magicprompt_default_model")
                                 else magicprompt_models[0]
                             )
                             is_magic_model_available = True
@@ -286,7 +288,7 @@ class Script(scripts.Script):
                 with gr.Group():
                     with gr.Accordion("Advanced options", open=False):
                         gr.HTML(
-                            "Some settings have been moved to the settings tab. Find them in the Dynamic Prompts section.",
+                            "Some settings have been moved to the settings tab. Find them in the Conditional Dynamic Prompts section.",
                         )
 
                         unlink_seed_from_prompt = gr.Checkbox(
@@ -368,21 +370,21 @@ class Script(scripts.Script):
             logger.debug("Dynamic prompts disabled - exiting")
             return p
 
-        ignore_whitespace = opts.dp_ignore_whitespace
+        ignore_whitespace = opts.cdp_ignore_whitespace
 
-        self._prompt_writer.enabled = opts.dp_write_prompts_to_file
-        self._limit_jinja_prompts = opts.dp_limit_jinja_prompts
-        self._auto_purge_cache = opts.dp_auto_purge_cache
-        self._wildcard_manager.dedup_wildcards = not opts.dp_wildcard_manager_no_dedupe
-        self._wildcard_manager.sort_wildcards = not opts.dp_wildcard_manager_no_sort
-        self._wildcard_manager.shuffle_wildcards = opts.dp_wildcard_manager_shuffle
+        self._prompt_writer.enabled = opts.cdp_write_prompts_to_file
+        self._limit_jinja_prompts = opts.cdp_limit_jinja_prompts
+        self._auto_purge_cache = opts.cdp_auto_purge_cache
+        self._wildcard_manager.dedup_wildcards = not opts.cdp_wildcard_manager_no_dedupe
+        self._wildcard_manager.sort_wildcards = not opts.cdp_wildcard_manager_no_sort
+        self._wildcard_manager.shuffle_wildcards = opts.cdp_wildcard_manager_shuffle
 
-        magicprompt_batch_size = opts.dp_magicprompt_batch_size
+        magicprompt_batch_size = opts.cdp_magicprompt_batch_size
 
         parser_config = ParserConfig(
-            variant_start=opts.dp_parser_variant_start,
-            variant_end=opts.dp_parser_variant_end,
-            wildcard_wrap=opts.dp_parser_wildcard_wrap,
+            variant_start=opts.cdp_parser_variant_start,
+            variant_end=opts.cdp_parser_variant_end,
+            wildcard_wrap=opts.cdp_parser_wildcard_wrap,
         )
 
         fix_seed(p)
@@ -515,7 +517,7 @@ class Script(scripts.Script):
             negative_prompts=all_negative_prompts,
         )
 
-        if opts.dp_write_raw_template:
+        if opts.cdp_write_raw_template:
             params = p.extra_generation_params
             if original_prompt:
                 params["Template"] = original_prompt

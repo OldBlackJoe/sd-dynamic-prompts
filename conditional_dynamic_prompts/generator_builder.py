@@ -13,7 +13,10 @@ from dynamicprompts.generators import (
 )
 from dynamicprompts.parser.parse import default_parser_config
 
-from sd_dynamic_prompts.frozenprompt_generator import FrozenPromptGenerator
+from conditional_dynamic_prompts.conditional_syntax import (
+    ConditionalPromptGenerator,
+)
+from conditional_dynamic_prompts.frozenprompt_generator import FrozenPromptGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -158,7 +161,7 @@ class GeneratorBuilder:
             generator = self.create_basic_generator()
 
         if self._is_magic_prompt:
-            from sd_dynamic_prompts.magic_prompt import (
+            from conditional_dynamic_prompts.magic_prompt import (
                 SpecialSyntaxAwareMagicPromptGenerator,
             )
 
@@ -175,7 +178,7 @@ class GeneratorBuilder:
 
         if self._is_attention_grabber:
             try:
-                from sd_dynamic_prompts.attention_generator import (
+                from conditional_dynamic_prompts.attention_generator import (
                     SpecialSyntaxAwareAttentionGenerator,
                 )
 
@@ -186,6 +189,15 @@ class GeneratorBuilder:
                 )
             except ImportError as ie:
                 logger.error(f"Not using AttentionGenerator: {ie}")
+
+        generator = ConditionalPromptGenerator(
+            generator,
+            self._wildcard_manager,
+            seed=self._seed,
+            unlink_seed_from_prompt=self._unlink_seed_from_prompt,
+            ignore_whitespace=self._ignore_whitespace,
+            parser_config=self._parser_config,
+        )
 
         if self._should_freeze_prompt:
             generator = FrozenPromptGenerator(generator)

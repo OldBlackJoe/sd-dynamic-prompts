@@ -3,8 +3,8 @@ from unittest.mock import patch
 from dynamicprompts.generators.magicprompt import MagicPromptGenerator
 from dynamicprompts.wildcards import WildcardManager
 
-from sd_dynamic_prompts.frozenprompt_generator import FrozenPromptGenerator
-from sd_dynamic_prompts.generator_builder import GeneratorBuilder
+from conditional_dynamic_prompts.frozenprompt_generator import FrozenPromptGenerator
+from conditional_dynamic_prompts.generator_builder import GeneratorBuilder
 
 
 def test_magic_blocklist_regexp(tmp_path):
@@ -28,4 +28,4 @@ def test_frozen_generator(tmp_path):
         True,
     )
     gen = gb.create_generator()
-    assert type(gen) == FrozenPromptGenerator
+    assert isinstance(gen, FrozenPromptGenerator)

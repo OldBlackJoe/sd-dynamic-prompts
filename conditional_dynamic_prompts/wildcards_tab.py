@@ -14,7 +14,7 @@ from dynamicprompts.wildcards.tree import WildcardTreeNode
 from modules import script_callbacks
 from send2trash import send2trash
 
-from sd_dynamic_prompts.element_ids import make_element_id
+from conditional_dynamic_prompts.element_ids import make_element_id
 
 COPY_COLLECTION_ACTION = "copy collection"
 LOAD_FILE_ACTION = "load file"
@@ -30,7 +30,7 @@ def get_collection_dirs() -> dict[str, Path]:
     """
     Get a mapping of name -> subdirectory path for the extension's collections/ directory.
     """
-    from sd_dynamic_prompts.paths import get_extension_base_path
+    from conditional_dynamic_prompts.paths import get_extension_base_path
 
     collections_path = get_extension_base_path() / "collections"
 
@@ -163,14 +163,14 @@ def on_ui_tabs():
 
         delete_tree_button.click(
             delete_tree_callback,
-            _js="SDDP.onDeleteTreeClick",
+            _js="CDP.onDeleteTreeClick",
             inputs=[client_to_server_message_textbox],
             outputs=[server_to_client_message_textbox],
         )
 
         save_button.click(
             save_file_callback,
-            _js="SDDP.onSaveFileClick",
+            _js="CDP.onSaveFileClick",
             inputs=[client_to_server_message_textbox],
             outputs=[server_to_client_message_textbox],
         )
@@ -181,7 +181,7 @@ def on_ui_tabs():
             outputs=[server_to_client_message_textbox],
         )
 
-    return ((wildcards_tab, "Wildcards Manager", "sddp-wildcard-manager"),)
+    return ((wildcards_tab, "Wildcards Manager", "cdp-wildcard-manager"),)
 
 
 def create_payload(*, action: str, success: bool, **rest) -> str:

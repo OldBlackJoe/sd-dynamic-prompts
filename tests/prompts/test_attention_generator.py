@@ -1,4 +1,6 @@
-from sd_dynamic_prompts.attention_generator import SpecialSyntaxAwareAttentionGenerator
+from conditional_dynamic_prompts.attention_generator import (
+    SpecialSyntaxAwareAttentionGenerator,
+)
 
 
 def test_default_generator():

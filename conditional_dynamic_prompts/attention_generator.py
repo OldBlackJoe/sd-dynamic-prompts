@@ -1,6 +1,6 @@
 from dynamicprompts.generators.attentiongenerator import AttentionGenerator
 
-from sd_dynamic_prompts.special_syntax import (
+from conditional_dynamic_prompts.special_syntax import (
     append_chunks,
     remove_a1111_special_syntax_chunks,
 )

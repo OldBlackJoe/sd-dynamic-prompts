@@ -3,7 +3,8 @@
 // `titles` is already defined by A1111, so we just merge into it...
 titles = {
   ...titles,
-  "Dynamic Prompts enabled": "Disable dynamic prompts by unchecking this box.",
+  "Conditional Dynamic Prompts enabled":
+    "Disable conditional dynamic prompts by unchecking this box.",
 
   "Combinatorial generation": `
 Instead of generating random prompts from a template, combinatorial generation produces every possible prompt from the given string.

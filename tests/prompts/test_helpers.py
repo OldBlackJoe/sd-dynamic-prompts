@@ -4,7 +4,7 @@ from unittest import mock
 
 import pytest
 
-from sd_dynamic_prompts.helpers import (
+from conditional_dynamic_prompts.helpers import (
     generate_prompt_cross_product,
     generate_prompts,
     get_seeds,

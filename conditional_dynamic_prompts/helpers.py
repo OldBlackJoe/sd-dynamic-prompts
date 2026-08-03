@@ -6,7 +6,7 @@ from pathlib import Path
 
 from dynamicprompts.generators.promptgenerator import PromptGenerator
 
-from sd_dynamic_prompts.paths import get_magicprompt_models_txt_path
+from conditional_dynamic_prompts.paths import get_magicprompt_models_txt_path
 
 logger = logging.getLogger(__name__)
 

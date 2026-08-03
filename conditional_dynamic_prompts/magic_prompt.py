@@ -3,7 +3,7 @@ from itertools import zip_longest
 
 from dynamicprompts.generators.magicprompt import MagicPromptGenerator
 
-from sd_dynamic_prompts.special_syntax import (
+from conditional_dynamic_prompts.special_syntax import (
     append_chunks,
     remove_a1111_special_syntax_chunks,
 )

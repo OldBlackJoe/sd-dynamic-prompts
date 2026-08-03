@@ -1,4 +1,4 @@
-# NB: this file may not import anything from `sd_dynamic_prompts` because it is used by `install.py`.
+# NB: this file may not import anything from `conditional_dynamic_prompts` because it is used by `install.py`.
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ except ImportError:
             from pip._vendor import tomli
         except ImportError:
             raise ImportError(
-                "A TOML library is required to install sd-dynamic-prompts, "
+                "A TOML library is required to install sd-dynamic-prompts-conditional, "
                 "but could not be imported. "
                 "Please install tomli (pip install tomli) and try again.",
             ) from None
@@ -51,7 +51,7 @@ class InstallResult:
         return (
             f"You have {self.requirement.name} version {self.installed or 'not'} installed, "
             f"but this extension requires version {self.requirement.specifier}. "
-            f"Please run `install.py` from the sd-dynamic-prompts extension directory, "
+            f"Please run `install.py` from the sd-dynamic-prompts-conditional extension directory, "
             f"or `{self.pip_install_command}`."
         )
 
@@ -140,7 +140,7 @@ def install_requirements(force=False) -> None:
         "install",
         *requirements_to_install,
     ]
-    print(f"sd-dynamic-prompts installer: running {shlex.join(command)}")
+    print(f"sd-dynamic-prompts-conditional installer: running {shlex.join(command)}")
     subprocess.check_call(command)
 
 

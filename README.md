@@ -1,4 +1,60 @@
-# Stable Diffusion Dynamic Prompts extension
+# Conditional Dynamic Prompts for Stable Diffusion WebUI Forge
+
+This is a local fork of
+[sd-dynamic-prompts](https://github.com/adieyal/sd-dynamic-prompts) 2.17.1.
+It keeps the upstream template language and adds conditional wildcard expansion.
+The fork remains under the upstream MIT license.
+
+## Conditional wildcard syntax
+
+Use a conditional as a comma-separated prompt item:
+
+```text
+1girl, bikini, @if{bikini=__bikini_or_die__}, beach
+```
+
+Multiple ordered branches can be placed in one conditional expression. Separate
+branches with `|`; commas belong to the selected result prompt:
+
+```text
+@if{bikini=__bikini_or_die__, torogao | swimsuit=torogao, see-through}
+```
+
+Branches are checked from left to right and only the first matching branch is
+expanded. If the prompt contains both `bikini` and `swimsuit`, the example uses
+`__bikini_or_die__, torogao`. If it contains only `swimsuit`, it adds the literal
+prompt `torogao, see-through`. If neither condition matches, the entire expression
+is removed.
+
+Processing happens in this order:
+
+1. All ordinary Dynamic Prompts syntax is expanded, including wildcards and
+   variants.
+2. The fork checks the resulting prompt for `bikini`.
+3. On a match, it replaces the conditional expression with one random line from
+   `bikini_or_die.txt`. Without a match, it removes the expression.
+
+The condition is case-insensitive, treats spaces and underscores as equivalent,
+and matches a substring inside each comma-separated prompt tag. For example,
+`bikini` matches `white bikini` and `microbikini`. Conditional expressions in
+selected wildcard-file lines are also protected until the final conditional pass.
+
+The required `@if` prefix separates conditionals from upstream variants, Jinja
+tags, variables, and `%{...}` wrappers. A result may contain literal prompt tags,
+one wildcard, or multiple wildcards; all regular wildcards in it are fully
+expanded. Multiple conditionals in the same prompt are all evaluated
+against the prompt produced by the ordinary expansion stage, so one conditional
+does not activate another conditional beside it.
+
+Run only this fork or the upstream extension, not both. This installation uses
+the existing upstream extension's `wildcards` directory through a Windows
+junction so current wildcard files stay in one place.
+
+## Upstream documentation
+
+The remainder of this document is the upstream documentation for the template
+language and UI.
+
 A custom extension for [AUTOMATIC1111/stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) that implements an expressive template language for random or combinatorial prompt generation along with features to support deep wildcard directory structures.
 
 Looking for ComfyUI nodes? Find them [here](https://github.com/adieyal/comfyui-dynamicprompts).
@@ -86,7 +142,7 @@ The extension can be installed directly from within the **Extensions** tab withi
 You can also install it manually by running the following command from within the webui directory:
 
 ```shell
-git clone https://github.com/adieyal/sd-dynamic-prompts/ extensions/sd-dynamic-prompts
+git clone https://github.com/OldBlackJoe/sd-dynamic-prompts extensions/sd-dynamic-prompts-conditional
 ```
 
 You can create [wildcard files](#template-syntax) in `extensions/sd-dynamic-prompts/wildcards` or you can leverage the [pre-installed collections](#collections)

@@ -13,7 +13,7 @@ def get_extension_base_path() -> Path:
     Get the directory the extension is installed in.
     """
     path = Path(__file__).parent.parent
-    assert (path / "sd_dynamic_prompts").is_dir()  # sanity check
+    assert (path / "conditional_dynamic_prompts").is_dir()  # sanity check
     assert (path / "scripts").is_dir()  # sanity check
     return path
 

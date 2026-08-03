@@ -17,7 +17,9 @@ def test_magic_prompts(monkeypatch):
         lambda self, model_name: fake_generator,
     )
 
-    from sd_dynamic_prompts.magic_prompt import SpecialSyntaxAwareMagicPromptGenerator
+    from conditional_dynamic_prompts.magic_prompt import (
+        SpecialSyntaxAwareMagicPromptGenerator,
+    )
 
     generator = SpecialSyntaxAwareMagicPromptGenerator()
     for prompt in generator.generate(

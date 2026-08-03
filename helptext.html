@@ -5,6 +5,21 @@
     <a href="https://github.com/adieyal/sd-dynamic-prompts/issues">Report a bug</a><br>
     <br/>
 
+    <h3><strong>Conditional wildcards</strong></h3>
+
+    Use <code class="codeblock">@if{bikini=__bikini_or_die__}</code> to expand
+    <code class="codeblock">__bikini_or_die__</code> only when the fully expanded
+    prompt contains a tag with the text <code class="codeblock">bikini</code>,
+    such as <code class="codeblock">white bikini</code>. Conditional
+    wildcards run after all regular Dynamic Prompts syntax. Put each conditional
+    expression between commas like a normal prompt tag.<br/><br/>
+
+    Separate ordered fallback branches with <code class="codeblock">|</code>:
+    <code class="codeblock">@if{bikini=__bikini_or_die__, torogao | swimsuit=torogao, see-through}</code>.
+    Commas separate tags in a branch result, which may contain literal tags, one
+    wildcard, or multiple wildcards. The first matching branch is used; if none
+    match, nothing is added.<br/><br/>
+
     <h3><strong>Combinations</strong></h3>
 
     Choose a number of terms from a list, in this case we choose two artists:

@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from sd_dynamic_prompts.pnginfo_saver import strip_template_info
+from conditional_dynamic_prompts.pnginfo_saver import strip_template_info
 
 
 @pytest.fixture

@@ -1,6 +1,6 @@
 from dynamicprompts.generators import RandomPromptGenerator
 
-from sd_dynamic_prompts.frozenprompt_generator import FrozenPromptGenerator
+from conditional_dynamic_prompts.frozenprompt_generator import FrozenPromptGenerator
 
 
 def test_repeats_correctly():

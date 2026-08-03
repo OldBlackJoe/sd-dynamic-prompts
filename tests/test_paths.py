@@ -1,4 +1,4 @@
-from sd_dynamic_prompts.paths import (
+from conditional_dynamic_prompts.paths import (
     get_extension_base_path,
     get_magicprompt_models_txt_path,
     get_wildcard_dir,
