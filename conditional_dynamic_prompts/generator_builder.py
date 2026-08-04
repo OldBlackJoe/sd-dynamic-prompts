@@ -4,7 +4,6 @@ import logging
 
 from dynamicprompts.generators import (
     BatchedCombinatorialPromptGenerator,
-    CombinatorialPromptGenerator,
     DummyGenerator,
     FeelingLuckyGenerator,
     JinjaGenerator,
@@ -17,6 +16,9 @@ from conditional_dynamic_prompts.conditional_syntax import (
     ConditionalPromptGenerator,
 )
 from conditional_dynamic_prompts.frozenprompt_generator import FrozenPromptGenerator
+from conditional_dynamic_prompts.selective_combinations import (
+    SelectiveCombinatorialPromptGenerator,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -207,8 +209,10 @@ class GeneratorBuilder:
         self,
     ) -> PromptGenerator:
         if self._is_combinatorial:
-            prompt_generator = CombinatorialPromptGenerator(
+            prompt_generator = SelectiveCombinatorialPromptGenerator(
                 self._wildcard_manager,
+                seed=self._seed,
+                unlink_seed_from_prompt=self._unlink_seed_from_prompt,
                 parser_config=self._parser_config,
                 ignore_whitespace=self._ignore_whitespace,
             )

@@ -50,6 +50,45 @@ Run only this fork or the upstream extension, not both. This installation uses
 the existing upstream extension's `wildcards` directory through a Windows
 junction so current wildcard files stay in one place.
 
+## Selective combinatorial generation
+
+When **Combinatorial generation** is enabled, this fork enumerates only syntax
+explicitly wrapped in `@combination{...}`. For example:
+
+```text
+@combination{__blueaka_swimsuit__}, __pose__, __expression__
+```
+
+With **Max generations** set to `0`, this produces one prompt for every line in
+`blueaka_swimsuit.txt`. On each of those prompts, `__pose__` and
+`__expression__` are selected randomly instead of multiplying the batch size.
+Ordinary variants outside the wrapper are random as well.
+
+Multiple wrappers form a Cartesian product with each other, while unwrapped
+syntax remains random:
+
+```text
+@combination{__color__}, @combination{__location__}, __pose__
+```
+
+`@combination{...}` may contain the usual nested Dynamic Prompts syntax. **Max
+generations** still caps the number of marked combinations; `0` means all marked
+combinations. If a combinatorial prompt contains no `@combination{...}` block,
+it produces one randomly expanded prompt per combinatorial batch.
+
+**Combinatorial batches** repeats the marked combination set, but it does not
+reuse the fully expanded prompts. Every repeated batch randomly expands all
+unwrapped wildcards and variants again. The prompt's random stream continues
+across batches instead of being reset to the same image seeds.
+Repeated results are ordered next to each other: character A batch 1, character
+A batch 2, character B batch 1, character B batch 2, and so on.
+
+When the Forge **Seed** field is `-1` and **Fixed seed** is disabled, every image
+in selective combinatorial generation receives an independently randomized
+image seed rather than `first seed + 1`, `first seed + 2`, and so on. Metadata
+shows the resolved numeric seed, not `-1`. An explicitly entered numeric seed
+keeps the normal deterministic behavior.
+
 ## Upstream documentation
 
 The remainder of this document is the upstream documentation for the template

@@ -20,6 +20,25 @@
     wildcard, or multiple wildcards. The first matching branch is used; if none
     match, nothing is added.<br/><br/>
 
+    <h3><strong>Selective combinatorial generation</strong></h3>
+
+    With <strong>Combinatorial generation</strong> enabled, only content wrapped
+    in <code class="codeblock">@combination{...}</code> is enumerated. For
+    example,
+    <code class="codeblock">@combination{__blueaka_swimsuit__}, __pose__</code>
+    generates one prompt for every line in <code class="codeblock">blueaka_swimsuit.txt</code>,
+    while <code class="codeblock">__pose__</code> is chosen randomly again for
+    every generated prompt.<br/><br/>
+
+    Multiple <code class="codeblock">@combination{...}</code> blocks form a
+    Cartesian product with each other. Unwrapped wildcards and variants remain
+    random. A Max generations value of 0 enumerates all marked combinations.
+    Combinatorial batches repeats the marked set, and rerolls every unwrapped
+    wildcard and variant for each repeated batch. With Seed set to -1 and Fixed
+    seed disabled, every generated image also receives an independent random
+    seed instead of a sequentially incremented seed. Repeated results for the
+    same marked combination are placed next to each other.<br/><br/>
+
     <h3><strong>Combinations</strong></h3>
 
     Choose a number of terms from a list, in this case we choose two artists:

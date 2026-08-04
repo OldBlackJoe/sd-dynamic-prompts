@@ -78,6 +78,51 @@ def test_get_seeds_with_random_seed(processing):
     assert subseeds == list(range(subseed, subseed + num_seeds))
 
 
+def test_get_seeds_randomizes_each_combinatorial_generation(processing):
+    random_seeds = [3452808796, 81726354, 2901746281]
+    with mock.patch(
+        "conditional_dynamic_prompts.helpers.secrets.randbelow",
+        side_effect=random_seeds,
+    ):
+        seeds, subseeds = get_seeds(
+            processing,
+            num_seeds=3,
+            use_fixed_seed=False,
+            is_combinatorial=True,
+            combinatorial_batches=2,
+            randomize=True,
+        )
+
+    assert seeds == random_seeds
+    assert subseeds == [
+        processing.subseed,
+        processing.subseed + 1,
+        processing.subseed + 2,
+    ]
+
+
+def test_fixed_seed_takes_precedence_over_randomization(processing):
+    with mock.patch(
+        "conditional_dynamic_prompts.helpers.secrets.randbelow",
+    ) as random_seed:
+        seeds, _ = get_seeds(
+            processing,
+            num_seeds=4,
+            use_fixed_seed=True,
+            is_combinatorial=True,
+            combinatorial_batches=2,
+            randomize=True,
+        )
+
+    assert seeds == [
+        processing.seed,
+        processing.seed,
+        processing.seed + 1,
+        processing.seed + 1,
+    ]
+    random_seed.assert_not_called()
+
+
 def test_load_magicprompt_models(tmp_path):
     s = """# a comment
 model1 # another comment

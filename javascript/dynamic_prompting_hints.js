@@ -7,16 +7,17 @@ titles = {
     "Disable conditional dynamic prompts by unchecking this box.",
 
   "Combinatorial generation": `
-Instead of generating random prompts from a template, combinatorial generation produces every possible prompt from the given string.
-The prompt 'I {love|hate} {New York|Chicago} in {June|July|August}' will produce 12 variants in total.
+Only content explicitly wrapped in @combination{...} is enumerated. Other wildcards and variants are selected randomly again for every generated prompt.
+For example, '@combination{__swimsuit__}, __pose__' generates one prompt per swimsuit line while keeping __pose__ random.
+Multiple @combination{...} blocks form a Cartesian product with each other.
 
 The value of the 'Seed' field is only used for the first image. To change this, look for 'Fixed seed' in the 'Advanced options' section.`.trim(),
 
   "Max generations (0 = all combinations - the batch count value is ignored)": `
-Limit the maximum number of prompts generated. 0 (default) will generate all images. Useful to prevent an unexpected combinatorial explosion.
+Limit the maximum number of marked combinations generated. 0 (default) generates all @combination{...} results.
 `.trim(),
 
-  "Combinatorial batches": `Re-run your combinatorial batch this many times with a different seed each time.`,
+  "Combinatorial batches": `Repeat each marked @combination{...} result this many times. Repetitions are placed next to each other, and unwrapped wildcards and variants are randomly expanded again each time. When Seed is -1 and Fixed seed is off, every image also receives an independent random seed.`,
 
   "Magic prompt": `
 Magic Prompt adds interesting modifiers to your prompt for a little bit of extra spice.

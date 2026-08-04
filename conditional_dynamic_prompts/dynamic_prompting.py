@@ -387,6 +387,7 @@ class Script(scripts.Script):
             wildcard_wrap=opts.cdp_parser_wildcard_wrap,
         )
 
+        randomize_combinatorial_seeds = is_combinatorial and str(p.seed).strip() == "-1"
         fix_seed(p)
 
         # Save original prompts before we touch `p.prompt`/`p.hr_prompt` etc.
@@ -469,15 +470,19 @@ class Script(scripts.Script):
                 negative_generator = generator
 
             all_seeds = None
-            if num_images and not unlink_seed_from_prompt:
+            if num_images and (
+                not unlink_seed_from_prompt or randomize_combinatorial_seeds
+            ):
                 p.all_seeds, p.all_subseeds = get_seeds(
                     p,
                     num_images,
                     use_fixed_seed,
                     is_combinatorial,
                     combinatorial_batches,
+                    randomize=randomize_combinatorial_seeds,
                 )
-                all_seeds = p.all_seeds
+                if not unlink_seed_from_prompt:
+                    all_seeds = p.all_seeds
 
             all_prompts, all_negative_prompts = generate_prompts(
                 prompt_generator=generator,
@@ -486,6 +491,8 @@ class Script(scripts.Script):
                 negative_prompt=original_negative_prompt,
                 num_prompts=num_images,
                 seeds=all_seeds,
+                is_combinatorial=is_combinatorial,
+                combinatorial_batches=combinatorial_batches,
             )
 
         except GeneratorException as e:
@@ -503,6 +510,7 @@ class Script(scripts.Script):
                 use_fixed_seed,
                 is_combinatorial,
                 combinatorial_batches,
+                randomize=randomize_combinatorial_seeds,
             )
 
         if updated_count > 1:
