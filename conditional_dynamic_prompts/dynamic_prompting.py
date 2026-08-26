@@ -376,7 +376,7 @@ class Script(scripts.Script):
         self._limit_jinja_prompts = opts.cdp_limit_jinja_prompts
         self._auto_purge_cache = opts.cdp_auto_purge_cache
         self._wildcard_manager.dedup_wildcards = not opts.cdp_wildcard_manager_no_dedupe
-        self._wildcard_manager.sort_wildcards = not opts.cdp_wildcard_manager_no_sort
+        self._wildcard_manager.sort_wildcards = False
         self._wildcard_manager.shuffle_wildcards = opts.cdp_wildcard_manager_shuffle
 
         magicprompt_batch_size = opts.cdp_magicprompt_batch_size

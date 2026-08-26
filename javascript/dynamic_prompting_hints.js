@@ -9,6 +9,7 @@ titles = {
   "Combinatorial generation": `
 Only content explicitly wrapped in @combination{...} is enumerated. Other wildcards and variants are selected randomly again for every generated prompt.
 For example, '@combination{__swimsuit__}, __pose__' generates one prompt per swimsuit line while keeping __pose__ random.
+Rows from a wrapped wildcard follow their original text-file order instead of alphabetical order.
 Multiple @combination{...} blocks form a Cartesian product with each other.
 
 The value of the 'Seed' field is only used for the first image. To change this, look for 'Fixed seed' in the 'Advanced options' section.`.trim(),

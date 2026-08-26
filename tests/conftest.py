@@ -77,7 +77,6 @@ def monkeypatch_webui(monkeypatch, tmp_path):
                 cdp_parser_variant_start="{",
                 cdp_parser_wildcard_wrap="__",
                 cdp_wildcard_manager_no_dedupe=False,
-                cdp_wildcard_manager_no_sort=False,
                 cdp_wildcard_manager_shuffle=False,
                 cdp_write_prompts_to_file=False,
                 cdp_write_raw_template=False,

@@ -46,6 +46,34 @@ expanded. Multiple conditionals in the same prompt are all evaluated
 against the prompt produced by the ordinary expansion stage, so one conditional
 does not activate another conditional beside it.
 
+## Wildcard-only Anima sections
+
+Sections wrapped in `@anima{...}` inside a line loaded through `__wildcard__`
+are treated as Anima-only content and removed before the selected value is added
+to an Illustrious prompt. For example, this wildcard-file line:
+
+```text
+character tags, @anima{Anima sentence, Anima tag}, Illustrious tags
+```
+
+expands to:
+
+```text
+character tags, Illustrious tags
+```
+
+Nested braces inside the block are supported. An escaped prefix such as
+`\@anima{literal}` is preserved. This applies only to values read from wildcard
+files. Existing square-bracket syntax such as `[emphasis]`, including square
+brackets in wildcard values, is left unchanged.
+
+## Wildcard row order
+
+Wildcard values are never alphabetically sorted by this fork. Ordinary random
+`__wildcard__` selection uses the values in their original text-file order, and
+`@combination{__wildcard__}` enumerates them in that same order. The optional
+shuffle setting still takes precedence when explicitly enabled.
+
 Run only this fork or the upstream extension, not both. This installation uses
 the existing upstream extension's `wildcards` directory through a Windows
 junction so current wildcard files stay in one place.
@@ -62,7 +90,9 @@ explicitly wrapped in `@combination{...}`. For example:
 With **Max generations** set to `0`, this produces one prompt for every line in
 `blueaka_swimsuit.txt`. On each of those prompts, `__pose__` and
 `__expression__` are selected randomly instead of multiplying the batch size.
-Ordinary variants outside the wrapper are random as well.
+Rows inside the wrapped wildcard are generated in their original text-file
+order; they are not alphabetically sorted. Ordinary variants outside the
+wrapper are random as well.
 
 Multiple wrappers form a Cartesian product with each other, while unwrapped
 syntax remains random:

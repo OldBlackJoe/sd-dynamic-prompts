@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import copy
 from dataclasses import dataclass
 from itertools import product
 
@@ -18,6 +19,18 @@ COMBINATION_PREFIX = "@combination{"
 class CombinationBlock:
     token: str
     template: str
+
+
+def _copy_manager_with_file_order(
+    wildcard_manager: WildcardManager,
+) -> WildcardManager:
+    """Copy a manager while preserving wildcard-file row order."""
+    manager = copy(wildcard_manager)
+    # Avoid sharing and clearing the source manager's cache through the setter.
+    manager._values_cache = {}
+    manager.sort_wildcards = False
+    manager.shuffle_wildcards = False
+    return manager
 
 
 def _is_escaped(text: str, index: int) -> bool:
@@ -100,8 +113,9 @@ class SelectiveCombinatorialPromptGenerator(PromptGenerator):
         ignore_whitespace: bool = False,
         parser_config=default_parser_config,
     ) -> None:
+        combination_manager = _copy_manager_with_file_order(wildcard_manager)
         self._combination_generator = CombinatorialPromptGenerator(
-            wildcard_manager,
+            combination_manager,
             ignore_whitespace=ignore_whitespace,
             parser_config=parser_config,
         )

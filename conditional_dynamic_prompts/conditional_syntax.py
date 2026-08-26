@@ -11,6 +11,10 @@ from dynamicprompts.wildcards import WildcardManager
 from dynamicprompts.wildcards.item import WildcardItem
 from dynamicprompts.wildcards.values import WildcardValues
 
+from conditional_dynamic_prompts.wildcard_filters import (
+    remove_anima_wildcard_content,
+)
+
 # The explicit @if prefix keeps conditional expressions separate from upstream
 # Dynamic Prompts variants, variables, wrappers, and Jinja syntax.
 CONDITIONAL_CANDIDATE_RE = re.compile(
@@ -145,21 +149,27 @@ def _derive_seed(
 
 
 class ConditionalWildcardManager(WildcardManager):
-    """Protect conditionals that are introduced by a wildcard file line."""
+    """Apply fork-specific filters to values introduced by a wildcard line."""
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.sort_wildcards = False
 
     def get_values(self, wildcard: str) -> WildcardValues:
         values = super().get_values(wildcard)
         protected: list[str | WildcardItem] = []
         for item in values:
             if isinstance(item, WildcardItem):
+                content = remove_anima_wildcard_content(item.content)
                 protected.append(
                     WildcardItem(
-                        content=protect_conditionals(item.content) or "",
+                        content=protect_conditionals(content) or "",
                         weight=item.weight,
                     ),
                 )
             else:
-                protected.append(protect_conditionals(item) or "")
+                content = remove_anima_wildcard_content(item)
+                protected.append(protect_conditionals(content) or "")
         return WildcardValues.from_items(protected)
 
 

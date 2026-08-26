@@ -59,6 +59,18 @@ def test_only_wrapped_wildcard_is_enumerated(tmp_path):
     )
 
 
+def test_wrapped_wildcard_preserves_file_row_order(tmp_path):
+    _write_wildcard(tmp_path, "character", ["zeta", "alpha", "middle"])
+    manager = WildcardManager(tmp_path)
+    generator = SelectiveCombinatorialPromptGenerator(manager, seed=42)
+
+    prompts = generator.generate("@combination{__character__}", None)
+
+    assert prompts == ["zeta", "alpha", "middle"]
+    # The original manager keeps its normal sorting behavior outside the wrapper.
+    assert list(manager.get_values("character")) == ["alpha", "middle", "zeta"]
+
+
 def test_multiple_wrapped_blocks_form_the_only_cross_product(tmp_path):
     _write_wildcard(tmp_path, "color", ["red", "blue"])
     _write_wildcard(tmp_path, "location", ["beach", "pool", "studio"])

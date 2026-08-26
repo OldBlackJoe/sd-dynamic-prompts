@@ -82,15 +82,6 @@ def on_ui_settings():
     )
 
     shared.opts.add_option(
-        key="cdp_wildcard_manager_no_sort",
-        info=shared.OptionInfo(
-            False,
-            label="Disable sorting of wildcards before processing.",
-            section=section,
-        ),
-    )
-
-    shared.opts.add_option(
         key="cdp_wildcard_manager_shuffle",
         info=shared.OptionInfo(
             False,
