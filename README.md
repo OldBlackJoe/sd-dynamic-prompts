@@ -46,6 +46,32 @@ expanded. Multiple conditionals in the same prompt are all evaluated
 against the prompt produced by the ordinary expansion stage, so one conditional
 does not activate another conditional beside it.
 
+## Anatomy-gated prompt sections
+
+Use `@leg{...}`, `@foot{...}`, and `@hip{...}` to keep anatomy-specific content
+only when its trigger is present in the fully expanded positive prompt:
+
+```text
+1girl, bare legs, @leg{leg detail}, @foot{foot detail}
+```
+
+- `@leg{...}` is kept when the prompt contains the word `legs` or `feet`.
+- `@legs{...}` is supported as an alias of `@leg{...}`.
+- `@foot{...}` is kept only when the prompt contains the word `feet`.
+- `@feet{...}` is supported as an alias of `@foot{...}`.
+- `@hip{...}` is kept only when the prompt contains `(upper body:1.4)`.
+
+Matching is case-insensitive and happens after ordinary wildcards,
+`@combination`, `@once`, and `@if` have been resolved. The text inside the
+wrapper cannot trigger itself. A standalone prompt item that is exactly `legs`
+or `feet` is removed from the final positive prompt after it is used as a
+trigger. Phrases such as `bare legs` and weighted items such as `(legs:1.2)` are
+left intact, as are trigger words produced inside a retained wrapper. If a
+trigger is absent, the whole wrapper is removed along with an adjacent prompt
+comma. A retained section may contain literal prompt text, regular Dynamic
+Prompts syntax, or wildcards. These blocks also work when introduced by a
+wildcard-file row.
+
 ## Wildcard-only Anima sections
 
 Sections wrapped in `@anima{...}` inside a line loaded through `__wildcard__`
@@ -73,6 +99,34 @@ Wildcard values are never alphabetically sorted by this fork. Ordinary random
 `__wildcard__` selection uses the values in their original text-file order, and
 `@combination{__wildcard__}` enumerates them in that same order. The optional
 shuffle setting still takes precedence when explicitly enabled.
+
+## Draw-once wildcard syntax
+
+Wrap one or more wildcards in `@once{...}` to draw their rows randomly without
+replacement across the generated batch:
+
+```text
+1girl, @once{__pose__, __expression__}
+```
+
+Each wildcard occurrence has its own independent pool. A selected row is
+removed from that pool until every row has been selected once. If generation
+continues after the pool is empty, all rows are put back, reshuffled, and a new
+no-repeat cycle begins. For example, an 8-image generation using a 3-row
+`__pose__` wildcard produces two complete shuffled cycles followed by two
+different rows from the third cycle.
+
+The pool contains the wildcard file's physical non-empty rows exactly as
+written. Duplicate rows are preserved as separate entries instead of being
+deduplicated. This allows repeated rows to intentionally increase how often a
+category is selected. If a selected row contains nested wildcards, those nested
+wildcards are expanded normally and randomly after the row is drawn. They do
+not multiply the pool and are not subject to the outer `@once` cycle.
+
+Literal prompt text and multiple wildcards may share the same block. Ordinary
+wildcards outside `@once{...}` keep their usual random behavior. With selective
+combinatorial generation, the pools span all **Combinatorial batches** in the
+same order the resulting prompts are sent to Forge.
 
 Run only this fork or the upstream extension, not both. This installation uses
 the existing upstream extension's `wildcards` directory through a Windows

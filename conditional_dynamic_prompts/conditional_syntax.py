@@ -11,6 +11,8 @@ from dynamicprompts.wildcards import WildcardManager
 from dynamicprompts.wildcards.item import WildcardItem
 from dynamicprompts.wildcards.values import WildcardValues
 
+from conditional_dynamic_prompts.anatomy_syntax import protect_anatomy_blocks
+from conditional_dynamic_prompts.once_generator import protect_once_blocks
 from conditional_dynamic_prompts.wildcard_filters import (
     remove_anima_wildcard_content,
 )
@@ -158,9 +160,14 @@ class ConditionalWildcardManager(WildcardManager):
     def get_values(self, wildcard: str) -> WildcardValues:
         values = super().get_values(wildcard)
         protected: list[str | WildcardItem] = []
-        for item in values:
+        for item_index, item in enumerate(values):
             if isinstance(item, WildcardItem):
                 content = remove_anima_wildcard_content(item.content)
+                content = protect_anatomy_blocks(content)
+                content = protect_once_blocks(
+                    content,
+                    namespace=f"wildcard:{wildcard}:{item_index}",
+                )
                 protected.append(
                     WildcardItem(
                         content=protect_conditionals(content) or "",
@@ -169,6 +176,11 @@ class ConditionalWildcardManager(WildcardManager):
                 )
             else:
                 content = remove_anima_wildcard_content(item)
+                content = protect_anatomy_blocks(content)
+                content = protect_once_blocks(
+                    content,
+                    namespace=f"wildcard:{wildcard}:{item_index}",
+                )
                 protected.append(protect_conditionals(content) or "")
         return WildcardValues.from_items(protected)
 

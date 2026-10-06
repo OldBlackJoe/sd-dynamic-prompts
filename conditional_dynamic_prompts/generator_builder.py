@@ -12,10 +12,12 @@ from dynamicprompts.generators import (
 )
 from dynamicprompts.parser.parse import default_parser_config
 
+from conditional_dynamic_prompts.anatomy_syntax import AnatomyPromptGenerator
 from conditional_dynamic_prompts.conditional_syntax import (
     ConditionalPromptGenerator,
 )
 from conditional_dynamic_prompts.frozenprompt_generator import FrozenPromptGenerator
+from conditional_dynamic_prompts.once_generator import OncePromptGenerator
 from conditional_dynamic_prompts.selective_combinations import (
     SelectiveCombinatorialPromptGenerator,
 )
@@ -201,6 +203,15 @@ class GeneratorBuilder:
             parser_config=self._parser_config,
         )
 
+        generator = AnatomyPromptGenerator(
+            generator,
+            self._wildcard_manager,
+            seed=self._seed,
+            unlink_seed_from_prompt=self._unlink_seed_from_prompt,
+            ignore_whitespace=self._ignore_whitespace,
+            parser_config=self._parser_config,
+        )
+
         if self._should_freeze_prompt:
             generator = FrozenPromptGenerator(generator)
         return generator
@@ -216,16 +227,29 @@ class GeneratorBuilder:
                 parser_config=self._parser_config,
                 ignore_whitespace=self._ignore_whitespace,
             )
-            return BatchedCombinatorialPromptGenerator(
+            generator = BatchedCombinatorialPromptGenerator(
                 prompt_generator,
                 batches=self._combinatorial_batches,
             )
-        return RandomPromptGenerator(
+        else:
+            generator = RandomPromptGenerator(
+                self._wildcard_manager,
+                seed=self._seed,
+                parser_config=self._parser_config,
+                unlink_seed_from_prompt=self._unlink_seed_from_prompt,
+                ignore_whitespace=self._ignore_whitespace,
+            )
+
+        return OncePromptGenerator(
+            generator,
             self._wildcard_manager,
             seed=self._seed,
-            parser_config=self._parser_config,
             unlink_seed_from_prompt=self._unlink_seed_from_prompt,
+            combinatorial_batches=(
+                self._combinatorial_batches if self._is_combinatorial else 1
+            ),
             ignore_whitespace=self._ignore_whitespace,
+            parser_config=self._parser_config,
         )
 
     def create_jinja_generator(self, p) -> PromptGenerator:

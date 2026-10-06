@@ -20,6 +20,24 @@
     wildcard, or multiple wildcards. The first matching branch is used; if none
     match, nothing is added.<br/><br/>
 
+    <h3><strong>Anatomy-gated sections</strong></h3>
+
+    Use <code class="codeblock">@leg{...}</code> to keep content only when the
+    fully expanded positive prompt contains the word
+    <code class="codeblock">legs</code> or <code class="codeblock">feet</code>.
+    <code class="codeblock">@legs{...}</code> is an equivalent alias.
+    Use <code class="codeblock">@foot{...}</code> when content should require
+    <code class="codeblock">feet</code>; <code class="codeblock">@feet{...}</code>
+    is an equivalent alias. Use <code class="codeblock">@hip{...}</code> when
+    content should require <code class="codeblock">(upper body:1.4)</code>.
+    A standalone prompt item that is exactly
+    <code class="codeblock">legs</code> or <code class="codeblock">feet</code>
+    is removed after triggering. Phrases such as
+    <code class="codeblock">bare legs</code> and weighted items remain. The
+    wrapper is removed when its trigger is absent, and text inside the wrapper
+    cannot trigger itself. Retained sections may contain regular wildcards and
+    prompt syntax.<br/><br/>
+
     <h3><strong>Wildcard-only Anima sections</strong></h3>
 
     Content wrapped in <code class="codeblock">@anima{...}</code> inside a
@@ -28,6 +46,18 @@
     becomes <code class="codeblock">character, Illustrious tags</code> when
     selected through <code class="codeblock">__wildcard__</code>. Nested braces
     are supported. Existing square-bracket prompt syntax is not changed.<br/><br/>
+
+    <h3><strong>Draw-once wildcards</strong></h3>
+
+    Use <code class="codeblock">@once{__pose__}</code> to draw wildcard rows
+    randomly without replacement across the generated batch. After every row
+    has been used once, the pool is refilled and reshuffled for the next cycle.
+    Multiple wildcards such as
+    <code class="codeblock">@once{__pose__, __expression__}</code> each use an
+    independent pool. Each pool preserves every physical non-empty row,
+    including duplicate rows. Nested wildcards inside the selected row are then
+    expanded normally and randomly; they do not create extra pool entries. The
+    pools also span repeated Combinatorial batches in final output order.<br/><br/>
 
     <h3><strong>Selective combinatorial generation</strong></h3>
 
